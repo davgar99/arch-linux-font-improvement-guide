@@ -57,7 +57,13 @@ paru -S ttf-symbola
 sudo pacman -S ttf-jetbrains-mono
 ```
 ```
-paru -S ttf-fira-code
+sudo pacman -S ttf-fira-code
+```
+```
+sudo pacman -S ttf-hack
+```
+```
+sudo pacman -S adobe-source-code-pro-fonts
 ```
 
 ### Step 2:
@@ -154,7 +160,7 @@ Edit the **~/.Xresources** file *OR* create one if not present.
 **Tip:** Backup the file just in case.
 
 ```
-sudo vim ~/.Xresources
+vim ~/.Xresources
 ```
 
 **Tip:** Replace VIM with your editor of choice.
