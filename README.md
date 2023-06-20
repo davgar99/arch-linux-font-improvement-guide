@@ -74,7 +74,7 @@ Create a local or global XML file to apply font rendering effects.
 **Per user directory:** XDG_CONFIG_HOME/fontconfig/fonts.conf
 
 #### Example XML file:
-##### Modify the code as needed.
+##### Modify the XML file as needed.
 
 ```
 <?xml version="1.0"?>
@@ -88,22 +88,22 @@ Create a local or global XML file to apply font rendering effects.
     <edit name="hinting" mode="assign">
       <bool>true</bool>
     </edit>
-    <edit mode="assign" name="rgba">
+    <edit name="rgba" mode="assign">
       <const>rgb</const>
     </edit>
-    <edit mode="assign" name="hintstyle">
+    <edit name="hintstyle" mode="assign">
       <const>hintslight</const>
     </edit>
-    <edit mode="assign" name="lcdfilter">
+    <edit name="lcdfilter" mode="assign">
       <const>lcddefault</const>
     </edit>
   </match>
   <!-- Configure default fonts & fallback fonts -->
-  <!-- Replace fonts with prefered fonts -->
+  <!-- Replace fonts with preferred fonts -->
+  <!-- Noto Emoji allows for emojis to render in all apps including the terminal, remove if not needed  -->
     <alias>
     <family>serif</family>
     <prefer>
-     <family>Roboto</family>
      <family>Noto Serif</family>
      <family>Noto Color Emoji</family>
      <family>Noto Emoji</family>
@@ -112,7 +112,6 @@ Create a local or global XML file to apply font rendering effects.
   <alias>
     <family>sans-serif</family>
     <prefer>
-     <family>Roboto</family>
      <family>Noto Sans</family>
      <family>Noto Color Emoji</family>
      <family>Noto Emoji</family>
@@ -121,7 +120,6 @@ Create a local or global XML file to apply font rendering effects.
   <alias>
     <family>sans</family>
     <prefer>
-     <family>Roboto</family>
      <family>Noto Sans</family>
      <family>Noto Color Emoji</family>
      <family>Noto Emoji</family>
@@ -168,11 +166,11 @@ vim ~/.Xresources
 Add the following lines to that file and save changes.
 
 ```
-Xft.antialias: 1
-Xft.hinting: 1
-Xft.rgba: rgb
-Xft.hintstyle: hintslight
 Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintslight
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
 ```
 
 Run this command when finished.
@@ -218,3 +216,7 @@ sudo fc-cache -fv
 
 ### Step 7:
 Reboot your PC and enjoy better-looking fonts! 😁
+
+Sources:<br>
+<https://wiki.archlinux.org/title/Font_configuration> <br>
+<https://wiki.manjaro.org/index.php/Improve_Font_Rendering>
