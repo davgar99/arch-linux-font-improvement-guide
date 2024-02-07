@@ -76,6 +76,8 @@ Create a local or global XML file to apply font rendering effects.
 #### Example XML file:
 ##### Modify the XML file as needed.
 
+Side note: Please make sure to incorporate fallback fonts and address other necessary criteria, as this XML file is quite barebones and may not cover all potential use cases.
+
 ```
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
@@ -147,7 +149,7 @@ Create a local or global XML file to apply font rendering effects.
 ```
 
 ### Step 3:
-Install xorg-xrdb.
+Install xorg-xrdb (if needed).
 
 ```
 sudo pacman -S xorg-xrdb
@@ -217,6 +219,6 @@ sudo fc-cache -fv
 ### Step 7:
 Reboot your PC and enjoy better-looking fonts! 😁
 
-Sources:<br>
+## Sources:<br>
 <https://wiki.archlinux.org/title/Font_configuration> <br>
 <https://wiki.manjaro.org/index.php/Improve_Font_Rendering>
