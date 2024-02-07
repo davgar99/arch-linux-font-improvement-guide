@@ -47,6 +47,7 @@ sudo pacman -S ttf-dejavu
 ```
 sudo pacman -S ttf-roboto
 ```
+#### Available on the AUR
 ```
 paru -S ttf-symbola
 ```
