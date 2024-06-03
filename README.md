@@ -1,12 +1,12 @@
 # Arch Linux Font Improvement Guide
 
-![Arch Linux Logo](images\arch_linux_logo.svg)
+![Arch Linux Logo](https://github.com/dajeed/arch-linux-font-improvement-guide/blob/main/images/arch_linux_logo.svg)
 
 ## Improving Font Rendering and Compatibility on Arch Linux
 
 Fonts in Arch Linux don't look all that great, and the reason why probably won't surprise you. Furthermore, many people notice the infamous "tofu" everywhere due to a lack of font support. Fortunately, there are a few ways to fix this without having to install many packages, and most of the necessary components should already be installed. Get ready to dive into the configuration files!
 
-![Tofu Example](images\tofu_example.png)
+![Tofu Example](https://github.com/dajeed/arch-linux-font-improvement-guide/blob/main/images/tofu_example.png)
 *Example of tofu*
 
 ### WARNING
