@@ -8,6 +8,8 @@ Fonts in Arch Linux don't look all that great, and the reason why probably won't
 
 ![Tofu Example](https://github.com/dajeed/arch-linux-font-improvement-guide/blob/main/images/tofu_example.png)
 
+Example of Tofu
+
 ### WARNING
 
 The following tweaks should work fine for most people, but as with anything in life, your experience may vary. If you need further assistance, feel free to leave a comment or consult the Arch Wiki. Furthermore, if you wish not to have any emoji support, be sure to ignore packages ending in or containing the word "emoji".
@@ -92,7 +94,7 @@ Create a local or global XML file to apply font rendering effects.
 
 Side note: Please make sure to incorporate fallback fonts and address other necessary criteria, as this XML file is quite barebones and may not cover all potential use cases. Side note: this XML adds emoji support to many apps so feel free to remove it if not needed.
 
-```text
+```xml
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
 <fontconfig>
