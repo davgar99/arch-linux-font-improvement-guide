@@ -92,7 +92,7 @@ Create a local or global XML file to apply font rendering effects.
 
 ##### Modify the XML file as needed
 
-Side note: Please make sure to incorporate fallback fonts and address other necessary criteria, as this XML file is quite barebones and may not cover all potential use cases. Side note: this XML adds emoji support to many apps so feel free to remove it if not needed.
+Side note: Please make sure to incorporate fallback fonts and address other necessary criteria, as this XML file is quite barebones and may not cover all potential use cases. Furthermore, this XML file adds emoji support to many apps so feel free to remove it if you don't need it.
 
 ```xml
 <?xml version="1.0"?>
