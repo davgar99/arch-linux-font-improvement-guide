@@ -164,7 +164,7 @@ Side note: Please make sure to incorporate fallback fonts and address other nece
 </fontconfig>
 ```
 
-### Step 3
+### Step 3 (Only for X11)
 
 Install xorg-xrdb (if needed).
 
