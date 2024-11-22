@@ -245,3 +245,7 @@ Reboot your PC and enjoy better-looking fonts! 😁
 <https://wiki.archlinux.org/title/Font_configuration>
 
 <https://wiki.manjaro.org/index.php/Improve_Font_Rendering>
+
+## License
+
+Attribution-NonCommercial-ShareAlike 4.0 International
