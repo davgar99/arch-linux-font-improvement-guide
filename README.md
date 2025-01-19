@@ -4,7 +4,6 @@
 
 ## Improving Font Rendering and Compatibility on Arch Linux
 
-
 Fonts in Arch Linux don't look all that great, and the reason why probably won't surprise you. Furthermore, many people notice the infamous "tofu" everywhere due to a lack of font support. Fortunately, there are a few ways to fix this without having to install many packages, and most of the necessary components should already be installed. Get ready to dive into the configuration files!
 
 ### Disclaimer
