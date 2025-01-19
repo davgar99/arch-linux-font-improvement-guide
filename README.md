@@ -2,28 +2,44 @@
 
 ![Arch Linux Logo](https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/images/arch_linux_logo.svg)
 
-## Improving Font Rendering and Compatibility on Arch Linux
+# Table of Contents
+  - [Synopsis](#synopsis)
+    - [Disclaimer](#disclaimer)
+  - [Improving Font Rendering and Compatibility on Arch Linux](#improving-font-rendering-and-compatibility-on-arch-linux)
+    - [Step 1: Install Recommended Fonts](#step-1-install-recommended-fonts)
+      - [Recommended fonts](#recommended-fonts)
+      - [Optional but highly recommended fonts](#optional-but-highly-recommended-fonts)
+      - [Available on the AUR](#available-on-the-aur)
+      - [Popular Monospaced Fonts](#popular-monospaced-fonts)
+    - [Step 2: Create XML Configuration File](#step-2-create-xml-configuration-file)
+      - [Example XML file](#example-xml-file)
+    - [Step 3: Disable Bitmap Fonts](#step-3-disable-bitmap-fonts)
+    - [Step 4: Configure X11 Settings (Only for X11)](#step-4-configure-x11-settings-only-for-x11)
+    - [Step 5: Create Symbolic Links](#step-5-create-symbolic-links)
+    - [Step 6: Edit freetype2.sh File](#step-6-edit-freetype2sh-file)
+    - [Step 7: Refresh Font Cache](#step-7-refresh-font-cache)
+    - [Step 8: Reboot](#step-8-reboot)
+  - [Sources](#sources)
+  - [License](#license)
 
-Fonts in Arch Linux don't look all that great, and the reason why probably won't surprise you. Furthermore, many people notice the infamous "tofu" everywhere due to a lack of font support. Fortunately, there are a few ways to fix this without having to install many packages, and most of the necessary components should already be installed. Get ready to dive into the configuration files!
+## Synopsis
 
-### Disclaimer
-
-> Although these tips were created specifically for Arch Linux, they should work for other Linux distributions with slight modifications. If something doesn't work for your particular distro, please use your distro's official documentation or support forum(s).
+After installing Arch Linux, you may wonder why the fonts in Arch Linux look so bland compared to Windows and macOS. The reason is that out of the box, Arch Linux doesn't implement many font rendering techniques to make the fonts look clear and legible. Essentially, there isn't much happening behind the scenes, so the text appears rather plain. Additionally, some apps or websites may display tofu (□) due to missing font support. Fortunately, these issues are relatively easy to fix, and this guide will discuss the solutions.
 
 <figure>
   <img src="https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/images/tofu_example.png" alt="Tofu Example">
   <figcaption>Example of Tofu</figcaption>
 </figure>
 
-### WARNING
+### Disclaimer
 
-> The following tweaks should work fine for most people, but as with anything in life, results may vary. If you need further assistance, feel free to leave a comment or consult the Arch Wiki. Furthermore, if you wish not to have any emoji support, be sure to ignore packages ending in or containing the word "emoji".
+> The following tweaks should work fine for most people, but as with anything in life, results may vary. If you need further assistance, feel free to leave a comment or consult the Arch Wiki. Furthermore, if you wish not to have any emoji support, be sure to ignore packages ending in or containing the word "emoji" and remove them if present.
 
-### Synopsis
+> **Side Note:** these tips were created specifically for Arch Linux, but they should work for other Linux distributions with slight modifications. If something doesn't work for your particular distro, please use your distro's official documentation or support forum(s).
 
-After installing Arch Linux, you may wonder why the fonts in Arch Linux look so bland compared to Windows and macOS. The reason is that out of the box, Arch Linux doesn't implement many font rendering techniques to make the fonts look clear and legible. Essentially, there isn't much happening behind the scenes, so the text appears rather plain. Additionally, some apps or websites may display tofu (□) due to missing font support. Fortunately, these issues are relatively easy to fix, and this guide will discuss the solutions.
+## Improving Font Rendering and Compatibility on Arch Linux
 
-### Step 1
+### Step 1: Install Recommended Fonts
 
 Download and install the recommended fonts.
 
@@ -61,7 +77,7 @@ sudo pacman -S ttf-hack
 sudo pacman -S adobe-source-code-pro-fonts
 ```
 
-### Step 2
+### Step 2: Create XML Configuration File
 
 Create a local or global XML file to apply font rendering effects.
 
@@ -143,7 +159,7 @@ Create a local or global XML file to apply font rendering effects.
 </fontconfig>
 ```
 
-### Disabling Bitmap Fonts
+### Step 3: Disable Bitmap Fonts
 
 Bitmap fonts are used as fallbacks for some fonts. This can lead to some very blurry, pixelated, or abnormally large fonts. Some users have reported Microsoft fonts being affected by this, and therefore it's recommended for users to disable bitmap fonts on a per font basis or globally. Be careful with disabling it globally as it may break some fonts (additional testing is required). According to the Arch Wiki, users may use the `70-no-bitmaps.conf` preset to disable this behavior or use an XML file instead.
 
@@ -163,7 +179,7 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 
 > **Note:** This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
 
-### Step 3 (Only for X11)
+### Step 4: Configure X11 Settings (Only for X11)
 
 Install `xorg-xrdb` (if needed).
 
@@ -197,7 +213,7 @@ Run this command when finished.
 xrdb -merge ~/.Xresources
 ```
 
-### Step 4
+### Step 5: Create Symbolic Links
 
 Create required symbolic links for text rendering effects to work:
 
@@ -207,7 +223,7 @@ sudo ln -s /usr/share/fontconfig/conf.avail/10-hinting-slight.conf /etc/fonts/co
 sudo ln -s /usr/share/fontconfig/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d/
 ```
 
-### Step 5
+### Step 6: Edit freetype2.sh File
 
 Edit the `freetype2.sh` file.
 
@@ -221,7 +237,7 @@ Uncomment the following line from the file.
 export FREETYPE_PROPERTIES="truetype:interpreter-version=40"
 ```
 
-### Step 6
+### Step 7: Refresh Font Cache
 
 Refresh the font cache files by running the following command.
 
@@ -229,7 +245,7 @@ Refresh the font cache files by running the following command.
 sudo fc-cache -fv
 ```
 
-### Step 7
+### Step 8: Reboot
 
 Reboot your PC and enjoy better-looking fonts! 😁
 
