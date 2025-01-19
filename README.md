@@ -1,18 +1,24 @@
 # Arch Linux Font Improvement Guide
 
-![Arch Linux Logo](https://github.com/dajeed/arch-linux-font-improvement-guide/blob/main/images/arch_linux_logo.svg)
+![Arch Linux Logo](https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/images/arch_linux_logo.svg)
 
 ## Improving Font Rendering and Compatibility on Arch Linux
 
+
 Fonts in Arch Linux don't look all that great, and the reason why probably won't surprise you. Furthermore, many people notice the infamous "tofu" everywhere due to a lack of font support. Fortunately, there are a few ways to fix this without having to install many packages, and most of the necessary components should already be installed. Get ready to dive into the configuration files!
 
-![Tofu Example](https://github.com/dajeed/arch-linux-font-improvement-guide/blob/main/images/tofu_example.png)
+### Disclaimer
 
-Example of Tofu
+> Although these tips were created specifically for Arch Linux, they should work for other Linux distributions with slight modifications. If something doesn't work for your particular distro, please use your distro's official documentation or support forum(s).
+
+<figure>
+  <img src="https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/images/tofu_example.png" alt="Tofu Example">
+  <figcaption>Example of Tofu</figcaption>
+</figure>
 
 ### WARNING
 
-The following tweaks should work fine for most people, but as with anything in life, your experience may vary. If you need further assistance, feel free to leave a comment or consult the Arch Wiki. Furthermore, if you wish not to have any emoji support, be sure to ignore packages ending in or containing the word "emoji".
+> The following tweaks should work fine for most people, but as with anything in life, results may vary. If you need further assistance, feel free to leave a comment or consult the Arch Wiki. Furthermore, if you wish not to have any emoji support, be sure to ignore packages ending in or containing the word "emoji".
 
 ### Synopsis
 
@@ -22,61 +28,37 @@ After installing Arch Linux, you may wonder why the fonts in Arch Linux look so 
 
 Download and install the recommended fonts.
 
-**Tip:** If the fonts are not available in the main repositories, check the AUR.
+> **Tip:** If the fonts are not available in the main repositories, check the AUR.
 
 #### Recommended fonts
 
-```text
+```sh
 sudo pacman -S noto-fonts
-```
-
-```text
 sudo pacman -S noto-fonts-cjk
-```
-
-```text
 sudo pacman -S noto-fonts-emoji
-```
-
-```text
 sudo pacman -S noto-fonts-extra
 ```
 
 #### Optional but highly recommended fonts
 
-```text
+```sh
 sudo pacman -S ttf-liberation
-```
-
-```text
 sudo pacman -S ttf-dejavu
-```
-
-```text
 sudo pacman -S ttf-roboto
 ```
 
 #### Available on the AUR
 
-```text
+```sh
 paru -S ttf-symbola
 ```
 
 #### Popular Monospaced Fonts
 
-```text
+```sh
 sudo pacman -S ttf-jetbrains-mono
-```
-
-```text
 sudo pacman -S ttf-fira-code
-```
-
-```text
 sudo pacman -S ttf-hack
-```
-
-```text
 sudo pacman -S adobe-source-code-pro-fonts
 ```
 
@@ -84,21 +66,19 @@ sudo pacman -S adobe-source-code-pro-fonts
 
 Create a local or global XML file to apply font rendering effects.
 
-**Global directory:** /etc/fonts/local.conf
+**Global directory:** `/etc/fonts/local.conf`
 
-**Per user directory:** XDG_CONFIG_HOME/fontconfig/fonts.conf
+**Per user directory:** `XDG_CONFIG_HOME/fontconfig/fonts.conf`
 
 #### Example XML file
 
-##### Modify the XML file as needed
-
-Side note: Please make sure to incorporate fallback fonts and address other necessary criteria, as this XML file is quite barebones and may not cover all potential use cases. Furthermore, this XML file adds emoji support to many apps so feel free to remove it if you don't need it.
+> **Side note:** Please make sure to include fallback fonts and address other necessary criteria, as this XML file is minimal and may not cover all potential use cases. Furthermore, this XML file adds emoji support to many apps (including the terminal) so feel free to modify the XML file if you don't need certain features.
 
 ```xml
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
 <fontconfig>
- <!-- Apply text rasterization, hinting, and anti-aliasing -->
+  <!-- Apply text rasterization, hinting, and anti-aliasing -->
   <match target="font">
     <edit name="antialias" mode="assign">
       <bool>true</bool>
@@ -119,72 +99,92 @@ Side note: Please make sure to incorporate fallback fonts and address other nece
   <!-- Configure default fonts & fallback fonts -->
   <!-- Replace fonts with preferred fonts -->
   <!-- Noto Emoji allows for emojis to render in all apps including the terminal, remove if not needed  -->
-    <alias>
+  <alias>
     <family>serif</family>
     <prefer>
-     <family>Noto Serif</family>
-     <family>Noto Color Emoji</family>
-     <family>Noto Emoji</family>
+      <family>Noto Serif</family>
+      <family>Noto Color Emoji</family>
+      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
     <family>sans-serif</family>
     <prefer>
-     <family>Noto Sans</family>
-     <family>Noto Color Emoji</family>
-     <family>Noto Emoji</family>
+      <family>Noto Sans</family>
+      <family>Noto Color Emoji</family>
+      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
     <family>sans</family>
     <prefer>
-     <family>Noto Sans</family>
-     <family>Noto Color Emoji</family>
-     <family>Noto Emoji</family>
+      <family>Noto Sans</family>
+      <family>Noto Color Emoji</family>
+      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
     <family>monospace</family>
     <prefer>
-     <family>JetBrainsMono</family>
-     <family>Noto Mono</family>
-     <family>Noto Color Emoji</family>
-     <family>Noto Emoji</family>
+      <family>JetBrainsMono</family>
+      <family>Noto Mono</family>
+      <family>Noto Color Emoji</family>
+      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
     <family>mono</family>
     <prefer>
-     <family>JetBrainsMono</family>
-     <family>Noto Mono</family>
-     <family>Noto Color Emoji</family>
-     <family>Noto Emoji</family>
+      <family>JetBrainsMono</family>
+      <family>Noto Mono</family>
+      <family>Noto Color Emoji</family>
+      <family>Noto Emoji</family>
     </prefer>
   </alias>
 </fontconfig>
 ```
 
+### Disabling Bitmap Fonts
+
+Bitmap fonts are used as fallbacks for some fonts. This can lead to some very blurry, pixelated, or abnormally large fonts. Some users have reported Microsoft fonts being affected by this, and therefore it's recommended for users to disable bitmap fonts on a per font basis or globally. Be careful with disabling it globally as it may break some fonts (additional testing is required). According to the Arch Wiki, users may use the `70-no-bitmaps.conf` preset to disable this behavior or use an XML file instead.
+
+**Path:** `~/.config/fontconfig/conf.d/20-no-embedded.conf`
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <match target="font">
+    <edit name="embeddedbitmap" mode="assign">
+      <bool>false</bool>
+    </edit>
+  </match>
+</fontconfig>
+```
+
+> **Note:** This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
+
 ### Step 3 (Only for X11)
 
-Install xorg-xrdb (if needed).
+Install `xorg-xrdb` (if needed).
 
-```text
+```sh
 sudo pacman -S xorg-xrdb
 ```
 
 Edit the **~/.Xresources** file *OR* create one if not present.
 
-**Tip:** Backup the file just in case.
+> **Tip:** Backup the file just in case.
 
-```text
+```sh
 vim ~/.Xresources
 ```
 
-**Tip:** Replace VIM with your editor of choice.
+> **Tip:** Replace `vim` with your preferred text editor.
 
 Add the following lines to that file and save changes.
 
-```text
+```sh
 Xft.lcdfilter: lcddefault
 Xft.hintstyle: hintslight
 Xft.hinting: 1
@@ -194,7 +194,7 @@ Xft.rgba: rgb
 
 Run this command when finished.
 
-```text
+```sh
 xrdb -merge ~/.Xresources
 ```
 
@@ -202,29 +202,23 @@ xrdb -merge ~/.Xresources
 
 Create required symbolic links for text rendering effects to work:
 
-```text
+```sh
 sudo ln -s /usr/share/fontconfig/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d/
-```
-
-```text
 sudo ln -s /usr/share/fontconfig/conf.avail/10-hinting-slight.conf /etc/fonts/conf.d/
-```
-
-```text
 sudo ln -s /usr/share/fontconfig/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d/
 ```
 
 ### Step 5
 
-Edit the freetype2.sh file.
+Edit the `freetype2.sh` file.
 
-```text
+```sh
 sudo vim /etc/profile.d/freetype2.sh
 ```
 
 Uncomment the following line from the file.
 
-```text
+```sh
 export FREETYPE_PROPERTIES="truetype:interpreter-version=40"
 ```
 
@@ -232,7 +226,7 @@ export FREETYPE_PROPERTIES="truetype:interpreter-version=40"
 
 Refresh the font cache files by running the following command.
 
-```text
+```sh
 sudo fc-cache -fv
 ```
 
@@ -248,4 +242,4 @@ Reboot your PC and enjoy better-looking fonts! 😁
 
 ## License
 
-Attribution-NonCommercial-ShareAlike 4.0 International
+[Attribution-NonCommercial-ShareAlike 4.0 International](https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/LICENSE)
