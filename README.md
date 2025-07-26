@@ -177,7 +177,7 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 </fontconfig>
 ```
 
-In case if after applying it emojis stopped working, put this instead of previous one into `~/.config/fontconfig/conf.d/20-no-embedded.conf`:
+In case if after applying it emojis stop working, put this instead of previous one into `~/.config/fontconfig/conf.d/20-no-embedded.conf`:
 
 ```xml
 <?xml version="1.0"?>
