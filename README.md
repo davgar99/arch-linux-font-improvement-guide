@@ -179,7 +179,7 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 
 > **Note:** This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
 
-**Possible Fix:** If emojis stop working about using the previous XML file, then feel free to use this instead:
+**Possible Fix:** If emojis stop working after using the previous XML file, then feel free to use this one instead:
 
 ```xml
 <?xml version="1.0"?>
