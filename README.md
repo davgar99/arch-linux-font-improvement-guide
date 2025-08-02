@@ -177,6 +177,28 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 </fontconfig>
 ```
 
+In case if after applying it emojis stop working, put this instead of previous one into `~/.config/fontconfig/conf.d/20-no-embedded.conf`:
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <match target="font">
+    <edit name="embeddedbitmap" mode="assign">
+      <bool>false</bool>
+    </edit>
+  </match>
+  <match target="font">
+    <test name="family" qual="any">
+      <string>Noto Color Emoji</string>
+    </test>
+    <edit name="embeddedbitmap">
+      <bool>true</bool>
+    </edit>
+  </match>
+</fontconfig>
+```
+
 > **Note:** This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
 
 ### Step 4: Configure X11 Settings (Only for X11)
