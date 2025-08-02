@@ -177,7 +177,9 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 </fontconfig>
 ```
 
-In case if after applying it emojis stop working, put this instead of previous one into `~/.config/fontconfig/conf.d/20-no-embedded.conf`:
+> **Note:** This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
+
+**Possible Fix:** If emojis stop working about using the previous XML file, then feel free to use this instead:
 
 ```xml
 <?xml version="1.0"?>
@@ -198,8 +200,6 @@ In case if after applying it emojis stop working, put this instead of previous o
   </match>
 </fontconfig>
 ```
-
-> **Note:** This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
 
 ### Step 4: Configure X11 Settings (Only for X11)
 
