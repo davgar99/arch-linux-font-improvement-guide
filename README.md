@@ -4,7 +4,6 @@
 
 # Table of Contents
   - [Synopsis](#synopsis)
-    - [Disclaimer](#disclaimer)
   - [Improving Font Rendering and Compatibility on Arch Linux](#improving-font-rendering-and-compatibility-on-arch-linux)
     - [Step 1: Install Recommended Fonts](#step-1-install-recommended-fonts)
       - [Recommended fonts](#recommended-fonts)
@@ -31,11 +30,11 @@ After installing Arch Linux, you may wonder why the fonts in Arch Linux look so 
   <figcaption>Example of Tofu</figcaption>
 </figure>
 
-### Disclaimer
-
+> [!CAUTION]
 > The following tweaks should work fine for most people, but as with anything in life, results may vary. If you need further assistance, feel free to leave a comment or consult the Arch Wiki. Furthermore, if you wish not to have any emoji support, be sure to ignore packages ending in or containing the word "emoji" and remove them if present.
 
-> **Side Note:** these tips were created specifically for Arch Linux, but they should work for other Linux distributions with slight modifications. If something doesn't work for your particular distro, please use your distro's official documentation or support forum(s).
+> [!NOTE]
+> These tips were created specifically for Arch Linux, but they should work for other Linux distributions with slight modifications. If something doesn't work for your particular distro, please use your distro's official documentation or support forum(s).
 
 ## Improving Font Rendering and Compatibility on Arch Linux
 
@@ -43,7 +42,8 @@ After installing Arch Linux, you may wonder why the fonts in Arch Linux look so 
 
 Download and install the recommended fonts.
 
-> **Tip:** If the fonts are not available in the main repositories, check the AUR.
+> [!TIP]
+> If the fonts are not available in the main repositories, check the AUR.
 
 #### Recommended fonts
 
@@ -87,7 +87,8 @@ Create a local or global XML file to apply font rendering effects.
 
 #### Example XML file
 
-> **Side note:** Please make sure to include fallback fonts and address other necessary criteria, as this XML file is minimal and may not cover all potential use cases. Furthermore, this XML file adds emoji support to many apps (including the terminal) so feel free to modify the XML file if you don't need certain features.
+> [!NOTE]
+> Please make sure to include fallback fonts and address other necessary criteria, as this XML file is minimal and may not cover all potential use cases. Additionally, this XML file adds emoji support to many apps (including the terminal) so feel free to modify the XML file if you don't need certain features.
 
 ```xml
 <?xml version="1.0"?>
@@ -177,9 +178,11 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 </fontconfig>
 ```
 
-> **Note:** This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
+> [!NOTE]
+> This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
 
-**Possible Fix:** If emojis stop working after using the previous XML file, then feel free to use this one instead:
+> [!TIP]
+> If emojis stop working after using the previous XML file, then feel free to use this one instead:
 
 ```xml
 <?xml version="1.0"?>
@@ -211,13 +214,15 @@ sudo pacman -S xorg-xrdb
 
 Edit the **~/.Xresources** file *OR* create one if not present.
 
-> **Tip:** Backup the file just in case.
+> [!TIP]
+> Backup the file just in case.
 
 ```sh
 vim ~/.Xresources
 ```
 
-> **Tip:** Replace `vim` with your preferred text editor.
+> [!TIP]
+> Replace `vim` with your preferred text editor.
 
 Add the following lines to that file and save changes.
 
