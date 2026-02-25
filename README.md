@@ -43,7 +43,7 @@ After installing Arch Linux, you may wonder why the fonts in Arch Linux look so 
 Download and install the recommended fonts.
 
 > [!TIP]
-> If the fonts are not available in the main repositories, check the AUR.
+> If the fonts aren't available in the main repositories, check the AUR.
 
 #### Recommended Fonts
 
@@ -63,6 +63,9 @@ sudo pacman -S ttf-roboto
 ```
 
 #### Available on the AUR
+> [!TIP]
+> For AUR packages you'll have to either install them manually or use a package manager.
+> In this example, I'll be using paru, but feel free to use whatever you want.
 
 ```sh
 paru -S ttf-symbola
@@ -87,8 +90,9 @@ Create a local or global XML file to apply font rendering effects.
 
 #### Example XML File
 
-> [!NOTE]
-> Please make sure to include fallback fonts and address other necessary criteria, as this XML file is minimal and may not cover all potential use cases. Additionally, this XML file adds emoji support to many apps (including the terminal) so feel free to modify the XML file if you don't need certain features.
+> [!TIP]
+> Feel free to modify this XML file if you don't need emoji support or certain features.
+> If you don't know what you're doing, just leave it as is.
 
 ```xml
 <?xml version="1.0"?>
