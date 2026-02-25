@@ -6,12 +6,12 @@
   - [Synopsis](#synopsis)
   - [Improving Font Rendering and Compatibility on Arch Linux](#improving-font-rendering-and-compatibility-on-arch-linux)
     - [Step 1: Install Recommended Fonts](#step-1-install-recommended-fonts)
-      - [Recommended fonts](#recommended-fonts)
-      - [Optional but highly recommended fonts](#optional-but-highly-recommended-fonts)
+      - [Recommended Fonts](#recommended-fonts)
+      - [Optional but Highly Recommended Fonts](#optional-but-highly-recommended-fonts)
       - [Available on the AUR](#available-on-the-aur)
       - [Popular Monospaced Fonts](#popular-monospaced-fonts)
     - [Step 2: Create XML Configuration File](#step-2-create-xml-configuration-file)
-      - [Example XML file](#example-xml-file)
+      - [Example XML File](#example-xml-file)
     - [Step 3: Disable Bitmap Fonts](#step-3-disable-bitmap-fonts)
     - [Step 4: Configure X11 Settings (Only for X11)](#step-4-configure-x11-settings-only-for-x11)
     - [Step 5: Create Symbolic Links](#step-5-create-symbolic-links)
@@ -45,7 +45,7 @@ Download and install the recommended fonts.
 > [!TIP]
 > If the fonts are not available in the main repositories, check the AUR.
 
-#### Recommended fonts
+#### Recommended Fonts
 
 ```sh
 sudo pacman -S noto-fonts
@@ -54,7 +54,7 @@ sudo pacman -S noto-fonts-emoji
 sudo pacman -S noto-fonts-extra
 ```
 
-#### Optional but highly recommended fonts
+#### Optional but Highly Recommended Fonts
 
 ```sh
 sudo pacman -S ttf-liberation
@@ -83,9 +83,9 @@ Create a local or global XML file to apply font rendering effects.
 
 **Global directory:** `/etc/fonts/local.conf`
 
-**Per user directory:** `XDG_CONFIG_HOME/fontconfig/fonts.conf`
+**Per user directory:** `~/.config/fontconfig/fonts.conf`
 
-#### Example XML file
+#### Example XML File
 
 > [!NOTE]
 > Please make sure to include fallback fonts and address other necessary criteria, as this XML file is minimal and may not cover all potential use cases. Additionally, this XML file adds emoji support to many apps (including the terminal) so feel free to modify the XML file if you don't need certain features.
@@ -114,13 +114,12 @@ Create a local or global XML file to apply font rendering effects.
   </match>
   <!-- Configure default fonts & fallback fonts -->
   <!-- Replace fonts with preferred fonts -->
-  <!-- Noto Emoji allows for emojis to render in all apps including the terminal, remove if not needed  -->
+  <!-- Noto Color Emoji allows for emojis to render in all apps including the terminal, remove it if not needed -->
   <alias>
     <family>serif</family>
     <prefer>
       <family>Noto Serif</family>
       <family>Noto Color Emoji</family>
-      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
@@ -128,7 +127,6 @@ Create a local or global XML file to apply font rendering effects.
     <prefer>
       <family>Noto Sans</family>
       <family>Noto Color Emoji</family>
-      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
@@ -136,25 +134,20 @@ Create a local or global XML file to apply font rendering effects.
     <prefer>
       <family>Noto Sans</family>
       <family>Noto Color Emoji</family>
-      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
     <family>monospace</family>
     <prefer>
-      <family>JetBrainsMono</family>
-      <family>Noto Mono</family>
+      <family>Noto Sans Mono</family>
       <family>Noto Color Emoji</family>
-      <family>Noto Emoji</family>
     </prefer>
   </alias>
   <alias>
     <family>mono</family>
     <prefer>
-      <family>JetBrainsMono</family>
-      <family>Noto Mono</family>
+      <family>Noto Sans Mono</family>
       <family>Noto Color Emoji</family>
-      <family>Noto Emoji</family>
     </prefer>
   </alias>
 </fontconfig>
@@ -197,7 +190,7 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
     <test name="family" qual="any">
       <string>Noto Color Emoji</string>
     </test>
-    <edit name="embeddedbitmap">
+    <edit name="embeddedbitmap" mode="assign">
       <bool>true</bool>
     </edit>
   </match>
