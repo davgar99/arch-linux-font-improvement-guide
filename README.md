@@ -1,6 +1,6 @@
 # Arch Linux Font Improvement Guide
 
-![Arch Linux Logo](https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/images/arch_linux_logo.svg)
+![Arch Linux Logo](images/arch_linux_logo.svg)
 
 # Table of Contents
   - [Synopsis](#synopsis)
@@ -26,7 +26,7 @@
 After installing Arch Linux, you may wonder why the fonts in Arch Linux look so bland compared to Windows and macOS. The reason is that out of the box, Arch Linux doesn't implement many font rendering techniques to make the fonts look clear and legible. Essentially, there isn't much happening behind the scenes, so the text appears rather plain. Additionally, some apps or websites may display tofu (□) due to missing font support. Fortunately, these issues are relatively easy to fix, and this guide will discuss the solutions.
 
 <figure>
-  <img src="https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/images/tofu_example.png" alt="Tofu Example">
+  <img src="images/tofu_example.png" alt="Tofu Example">
   <figcaption>Example of Tofu</figcaption>
 </figure>
 
@@ -48,18 +48,13 @@ Download and install the recommended fonts.
 #### Recommended Fonts
 
 ```sh
-sudo pacman -S noto-fonts
-sudo pacman -S noto-fonts-cjk
-sudo pacman -S noto-fonts-emoji
-sudo pacman -S noto-fonts-extra
+sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
 ```
 
 #### Optional but Highly Recommended Fonts
 
 ```sh
-sudo pacman -S ttf-liberation
-sudo pacman -S ttf-dejavu
-sudo pacman -S ttf-roboto
+sudo pacman -S ttf-liberation ttf-dejavu ttf-roboto
 ```
 
 #### Available on the AUR
@@ -74,10 +69,7 @@ paru -S ttf-symbola
 #### Popular Monospaced Fonts
 
 ```sh
-sudo pacman -S ttf-jetbrains-mono
-sudo pacman -S ttf-fira-code
-sudo pacman -S ttf-hack
-sudo pacman -S adobe-source-code-pro-fonts
+sudo pacman -S ttf-jetbrains-mono ttf-fira-code ttf-hack adobe-source-code-pro-fonts
 ```
 
 ### Step 2: Create XML Configuration File
@@ -203,6 +195,9 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 
 ### Step 4: Configure X11 Settings (Only for X11)
 
+> [!NOTE]
+> If you are using Wayland, you can skip this step as these settings are handled by Fontconfig or the compositor directly.
+
 Install `xorg-xrdb` (if needed).
 
 ```sh
@@ -273,6 +268,20 @@ sudo fc-cache -fv
 
 Reboot your PC and enjoy better-looking fonts! 😁
 
+### Optional Steps
+
+Add the following line to your "**/etc/environment**" file.
+
+```sh
+FREETYPE_PROPERTIES="cff:no-stem-darkening=0 autofitter:no-stem-darkening=0"
+```
+
+> [!NOTE]
+> This command enables **stem darkening**, which slightly thickens font "stems" to improve contrast and readability on low-DPI monitors. This results in a "richer" look similar to macOS font rendering.
+> - `cff:no-stem-darkening=0` enables it for OpenType/CFF fonts.
+> - `autofitter:no-stem-darkening=0` enables it for other fonts (like TrueType) when using the auto-hinter.
+> - Setting these to `0` (false) enables the feature because the property is named "**no**-stem-darkening".
+
 ## Sources
 
 <https://wiki.archlinux.org/title/Font_configuration>
@@ -281,4 +290,4 @@ Reboot your PC and enjoy better-looking fonts! 😁
 
 ## License
 
-[Attribution-NonCommercial-ShareAlike 4.0 International](https://github.com/davgar99/arch-linux-font-improvement-guide/blob/main/LICENSE)
+[Attribution-NonCommercial-ShareAlike 4.0 International](LICENSE)
