@@ -288,6 +288,8 @@ FREETYPE_PROPERTIES="cff:no-stem-darkening=0 autofitter:no-stem-darkening=0"
 
 <https://wiki.manjaro.org/index.php/Improve_Font_Rendering>
 
+<https://www.freetype.org/freetype2/docs/reference/ft2-properties.html#no-stem-darkening>
+
 ## License
 
 [Attribution-NonCommercial-ShareAlike 4.0 International](LICENSE)
