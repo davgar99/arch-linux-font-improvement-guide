@@ -18,12 +18,16 @@
     - [Step 6: Edit freetype2.sh File](#step-6-edit-freetype2sh-file)
     - [Step 7: Refresh Font Cache](#step-7-refresh-font-cache)
     - [Step 8: Reboot](#step-8-reboot)
+    - [Optional Steps](#optional-steps)
   - [Sources](#sources)
   - [License](#license)
 
 ## Synopsis
 
 After installing Arch Linux, you may wonder why the fonts in Arch Linux look so bland compared to Windows and macOS. The reason is that out of the box, Arch Linux doesn't implement many font rendering techniques to make the fonts look clear and legible. Essentially, there isn't much happening behind the scenes, so the text appears rather plain. Additionally, some apps or websites may display tofu (□) due to missing font support. Fortunately, these issues are relatively easy to fix, and this guide will discuss the solutions.
+
+> [!TIP]
+> Arch has actually started enabling a couple of these improvements by default in recent years. Basic hinting (`hintslight`) and LCD filtering now come pre-enabled out of the box on a fresh install. So fonts aren't quite as bare as they used to be, but there's still plenty of room for improvement, which is what the rest of this guide covers.
 
 <figure>
   <img src="images/tofu_example.png" alt="Tofu Example">
@@ -60,7 +64,10 @@ sudo pacman -S ttf-liberation ttf-dejavu ttf-roboto
 #### Available on the AUR
 > [!TIP]
 > For AUR packages you'll have to either install them manually or use a package manager.
-> In this example, I'll be using paru, but feel free to use whatever you want.
+> In this guide, I'll be using paru, but feel free to use whatever you want.
+
+> [!CAUTION]
+> `ttf-symbola`'s upstream file is hosted on the font author's personal site, which frequently goes down or 404s. If the build fails, try building it again later.
 
 ```sh
 paru -S ttf-symbola
@@ -151,7 +158,7 @@ Create a local or global XML file to apply font rendering effects.
 
 ### Step 3: Disable Bitmap Fonts
 
-Bitmap fonts are used as fallbacks for some fonts. This can lead to some very blurry, pixelated, or abnormally large fonts. Some users have reported Microsoft fonts being affected by this, and therefore it's recommended for users to disable bitmap fonts on a per font basis or globally. Be careful with disabling it globally as it may break some fonts (additional testing is required). According to the Arch Wiki, users may use the `70-no-bitmaps.conf` preset to disable this behavior or use an XML file instead.
+Bitmap fonts are used as fallbacks for some fonts. This can lead to some very blurry, pixelated, or abnormally large fonts. Some users have reported Microsoft fonts being affected by this, and therefore it's recommended for users to disable bitmap fonts on a per font basis or globally. Be careful with disabling it globally as it may break some fonts (additional testing is required). According to the Arch Wiki, users may use the `70-no-bitmaps-except-emoji.conf` preset to disable this behavior or use an XML file instead.
 
 **Path:** `~/.config/fontconfig/conf.d/20-no-embedded.conf`
 
@@ -169,6 +176,13 @@ Bitmap fonts are used as fallbacks for some fonts. This can lead to some very bl
 
 > [!NOTE]
 > This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
+
+> [!TIP]
+> Newer `fontconfig` versions ship a ready-made preset for exactly this case, so you can skip writing XML by hand:
+> ```sh
+> sudo ln -s /usr/share/fontconfig/conf.avail/70-no-bitmaps-except-emoji.conf /etc/fonts/conf.d/
+> ```
+> Use the XML version below instead if you want finer control over which bitmap fonts (besides emoji) get kept.
 
 > [!TIP]
 > If emojis stop working after using the previous XML file, then feel free to use this one instead:
@@ -236,13 +250,19 @@ xrdb -merge ~/.Xresources
 
 Create required symbolic links for text rendering effects to work:
 
+> [!NOTE]
+> On current Arch installs, `10-hinting-slight.conf` and `11-lcdfilter-default.conf` are usually already enabled by default (fontconfig now pre-links some presets via `/usr/share/fontconfig/conf.default/`). If you see `File exists` for those two, that just means they're already active, so there's nothing to fix. `10-sub-pixel-rgb.conf` is typically the only one still missing. The `-f` flag below makes all three commands safe to run regardless.
+
 ```sh
-sudo ln -s /usr/share/fontconfig/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d/
-sudo ln -s /usr/share/fontconfig/conf.avail/10-hinting-slight.conf /etc/fonts/conf.d/
-sudo ln -s /usr/share/fontconfig/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d/
+sudo ln -sf /usr/share/fontconfig/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d/
+sudo ln -sf /usr/share/fontconfig/conf.avail/10-hinting-slight.conf /etc/fonts/conf.d/
+sudo ln -sf /usr/share/fontconfig/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d/
 ```
 
 ### Step 6: Edit freetype2.sh File
+
+> [!NOTE]
+> `truetype:interpreter-version=40` has been Arch's default since FreeType 2.7, so on a stock system this step currently has no visible effect. It's still worth doing explicitly if you (or a different guide) previously set a different interpreter version and want to reset it back to the default.
 
 Edit the `freetype2.sh` file.
 
@@ -292,4 +312,4 @@ FREETYPE_PROPERTIES="cff:no-stem-darkening=0 autofitter:no-stem-darkening=0"
 
 ## License
 
-[Attribution-NonCommercial-ShareAlike 4.0 International](LICENSE)
+[Attribution-ShareAlike 4.0 International](LICENSE)
