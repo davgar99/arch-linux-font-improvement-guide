@@ -17,7 +17,7 @@
     - [Step 5: Create Symbolic Links](#step-5-create-symbolic-links)
     - [Step 6: Edit freetype2.sh File](#step-6-edit-freetype2sh-file)
     - [Step 7: Refresh Font Cache](#step-7-refresh-font-cache)
-    - [Step 8: Reboot](#step-8-reboot)
+    - [Step 8: Restart Applications](#step-8-restart-applications)
     - [Optional Steps](#optional-steps)
   - [Sources](#sources)
   - [License](#license)
@@ -63,7 +63,7 @@ sudo pacman -S ttf-liberation ttf-dejavu ttf-roboto
 
 #### Available on the AUR
 > [!TIP]
-> For AUR packages you'll have to either install them manually or use a package manager.
+> For AUR packages you'll have to either install them manually or use an AUR helper.
 > In this guide, I'll be using paru, but feel free to use whatever you want.
 
 > [!CAUTION]
@@ -278,15 +278,15 @@ export FREETYPE_PROPERTIES="truetype:interpreter-version=40"
 
 ### Step 7: Refresh Font Cache
 
-Refresh the font cache files by running the following command.
+Fontconfig-aware software normally refreshes the cache when needed, so this step is usually unnecessary. If you want to rebuild the cache manually, run:
 
 ```sh
-sudo fc-cache -fv
+fc-cache -fv
 ```
 
-### Step 8: Reboot
+### Step 8: Restart Applications
 
-Reboot your PC and enjoy better-looking fonts! 😁
+Restart any applications that were already running so they load the new Fontconfig configuration. A full system reboot is normally unnecessary.
 
 ### Optional Steps
 
