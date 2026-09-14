@@ -2,313 +2,233 @@
 
 ![Arch Linux Logo](images/arch_linux_logo.svg)
 
-# Table of Contents
-  - [Synopsis](#synopsis)
-  - [Improving Font Rendering and Compatibility on Arch Linux](#improving-font-rendering-and-compatibility-on-arch-linux)
-    - [Step 1: Install Recommended Fonts](#step-1-install-recommended-fonts)
-      - [Recommended Fonts](#recommended-fonts)
-      - [Optional but Highly Recommended Fonts](#optional-but-highly-recommended-fonts)
-      - [Available on the AUR](#available-on-the-aur)
-      - [Popular Monospaced Fonts](#popular-monospaced-fonts)
-    - [Step 2: Create XML Configuration File](#step-2-create-xml-configuration-file)
-      - [Example XML File](#example-xml-file)
-    - [Step 3: Disable Bitmap Fonts](#step-3-disable-bitmap-fonts)
-    - [Step 4: Configure X11 Settings (Only for X11)](#step-4-configure-x11-settings-only-for-x11)
-    - [Step 5: Create Symbolic Links](#step-5-create-symbolic-links)
-    - [Step 6: Edit freetype2.sh File](#step-6-edit-freetype2sh-file)
-    - [Step 7: Refresh Font Cache](#step-7-refresh-font-cache)
-    - [Step 8: Restart Applications](#step-8-restart-applications)
-    - [Optional Steps](#optional-steps)
-  - [Sources](#sources)
-  - [License](#license)
+This guide focuses on the smallest useful font-rendering changes for current Arch Linux. Modern Arch already ships sensible Fontconfig rendering defaults, so the goal is to avoid duplicating them and only add behavior that is still useful.
 
-## Synopsis
+> [!NOTE]
+> Reviewed against current Arch Linux and Fontconfig behavior in September 2026.
 
-After installing Arch Linux, you may wonder why the fonts in Arch Linux look so bland compared to Windows and macOS. The reason is that out of the box, Arch Linux doesn't implement many font rendering techniques to make the fonts look clear and legible. Essentially, there isn't much happening behind the scenes, so the text appears rather plain. Additionally, some apps or websites may display tofu (□) due to missing font support. Fortunately, these issues are relatively easy to fix, and this guide will discuss the solutions.
+## What Arch already does well
 
-> [!TIP]
-> Arch has actually started enabling a couple of these improvements by default in recent years. Basic hinting (`hintslight`) and LCD filtering now come pre-enabled out of the box on a fresh install. So fonts aren't quite as bare as they used to be, but there's still plenty of room for improvement, which is what the rest of this guide covers.
+Current Arch Linux already enables the important baseline rendering settings through its `fontconfig` package:
+
+- anti-aliasing
+- hinting
+- `hintslight`
+- `lcddefault`
+
+The package ships these active defaults in `/usr/share/fontconfig/conf.default/`, including `10-yes-antialias.conf`, `10-hinting-slight.conf`, and `11-lcdfilter-default.conf`.
+
+Because those settings are already provided, this guide no longer recommends creating a custom XML file that repeats them, re-linking those presets manually, or forcing FreeType settings that are already the default.
+
+The one additional rendering policy that is broadly useful is to prefer scalable fonts while still allowing bitmap emoji.
+
+## 1. Make sure Fontconfig is available
+
+Most graphical Arch installations already have `fontconfig` through desktop and application dependencies. Check before installing anything:
+
+```sh
+pacman -Q fontconfig
+```
+
+If it is not installed, add it:
+
+```sh
+sudo pacman -S fontconfig
+```
+
+No additional font family is required for the rendering improvement in this guide.
+
+## 2. Enable the scalable-font preference
+
+Fontconfig ships a preset specifically for rejecting ordinary bitmap-font fallbacks while preserving bitmap emoji:
+
+```text
+/usr/share/fontconfig/conf.avail/70-no-bitmaps-except-emoji.conf
+```
+
+Enable it globally by linking it into `/etc/fonts/conf.d/`.
+
+For a normal system where the destination does not already exist:
+
+```sh
+sudo ln -s /usr/share/fontconfig/conf.avail/70-no-bitmaps-except-emoji.conf \
+  /etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf
+```
+
+If you want a safe idempotent version that repairs an incorrect symlink without overwriting an administrator-provided regular file, use:
+
+```sh
+preset='/usr/share/fontconfig/conf.avail/70-no-bitmaps-except-emoji.conf'
+link='/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf'
+
+if [ -L "$link" ]; then
+    if [ "$(readlink "$link")" != "$preset" ]; then
+        sudo rm -- "$link"
+        sudo ln -s "$preset" "$link"
+    fi
+elif [ -e "$link" ]; then
+    if [ -f "$link" ]; then
+        printf 'Preserving existing administrator file: %s\n' "$link"
+    else
+        printf 'Refusing to replace unexpected filesystem object: %s\n' "$link" >&2
+        exit 1
+    fi
+else
+    sudo ln -s "$preset" "$link"
+fi
+```
+
+This is preferable to a blanket `embeddedbitmap=false` rule because the packaged preset keeps bitmap emoji working.
+
+## 3. Verify the active preset
+
+Check the symlink:
+
+```sh
+readlink /etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf
+```
+
+It should print:
+
+```text
+/usr/share/fontconfig/conf.avail/70-no-bitmaps-except-emoji.conf
+```
+
+You can also ask Fontconfig which configuration files are active:
+
+```sh
+fc-conflist | grep -F 70-no-bitmaps-except-emoji.conf
+```
+
+Restart applications that were already running so they reload Fontconfig configuration. A reboot is normally unnecessary.
+
+A forced `fc-cache -fv` rebuild is not required merely to activate this selection rule. Font caches describe installed font files; this change is a matching policy. Use a manual cache rebuild only as a troubleshooting step when installed fonts themselves appear stale.
+
+## Optional: install fonts for missing glyph coverage
+
+Font rendering and font coverage are separate problems. If text shows tofu (`□`) or a language is missing characters, install only the families you actually need.
 
 <figure>
   <img src="images/tofu_example.png" alt="Tofu Example">
-  <figcaption>Example of Tofu</figcaption>
+  <figcaption>Example of missing glyph coverage</figcaption>
 </figure>
 
-> [!CAUTION]
-> The following tweaks should work fine for most people, but as with anything in life, results may vary. If you need further assistance, feel free to leave a comment or consult the Arch Wiki. Furthermore, if you wish not to have any emoji support, be sure to ignore packages ending in or containing the word "emoji" and remove them if present.
-
-> [!NOTE]
-> These tips were created specifically for Arch Linux, but they should work for other Linux distributions with slight modifications. If something doesn't work for your particular distro, please use your distro's official documentation or support forum(s).
-
-## Improving Font Rendering and Compatibility on Arch Linux
-
-### Step 1: Install Recommended Fonts
-
-Download and install the recommended fonts.
-
-> [!TIP]
-> If the fonts aren't available in the main repositories, check the AUR.
-
-#### Recommended Fonts
+General-purpose Noto coverage:
 
 ```sh
-sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
+sudo pacman -S noto-fonts
 ```
 
-#### Optional but Highly Recommended Fonts
+Emoji support, if wanted:
 
 ```sh
-sudo pacman -S ttf-liberation ttf-dejavu ttf-roboto
+sudo pacman -S noto-fonts-emoji
 ```
 
-#### Available on the AUR
-> [!TIP]
-> For AUR packages you'll have to either install them manually or use an AUR helper.
-> In this guide, I'll be using paru, but feel free to use whatever you want.
-
-> [!CAUTION]
-> `ttf-symbola`'s upstream file is hosted on the font author's personal site, which frequently goes down or 404s. If the build fails, try building it again later.
+CJK coverage, if needed:
 
 ```sh
-paru -S ttf-symbola
+sudo pacman -S noto-fonts-cjk
 ```
 
-#### Popular Monospaced Fonts
+Additional Noto families, if needed:
 
 ```sh
-sudo pacman -S ttf-jetbrains-mono ttf-fira-code ttf-hack adobe-source-code-pro-fonts
+sudo pacman -S noto-fonts-extra
 ```
 
-### Step 2: Create XML Configuration File
-
-Create a local or global XML file to apply font rendering effects.
-
-**Global directory:** `/etc/fonts/local.conf`
-
-**Per user directory:** `~/.config/fontconfig/fonts.conf`
-
-#### Example XML File
-
-> [!TIP]
-> Feel free to modify this XML file if you don't need emoji support or certain features.
-> If you don't know what you're doing, just leave it as is.
-
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-<fontconfig>
-  <!-- Apply text rasterization, hinting, and anti-aliasing -->
-  <match target="font">
-    <edit name="antialias" mode="assign">
-      <bool>true</bool>
-    </edit>
-    <edit name="hinting" mode="assign">
-      <bool>true</bool>
-    </edit>
-    <edit name="rgba" mode="assign">
-      <const>rgb</const>
-    </edit>
-    <edit name="hintstyle" mode="assign">
-      <const>hintslight</const>
-    </edit>
-    <edit name="lcdfilter" mode="assign">
-      <const>lcddefault</const>
-    </edit>
-  </match>
-  <!-- Configure default fonts & fallback fonts -->
-  <!-- Replace fonts with preferred fonts -->
-  <!-- Noto Color Emoji allows for emojis to render in all apps including the terminal, remove it if not needed -->
-  <alias>
-    <family>serif</family>
-    <prefer>
-      <family>Noto Serif</family>
-      <family>Noto Color Emoji</family>
-    </prefer>
-  </alias>
-  <alias>
-    <family>sans-serif</family>
-    <prefer>
-      <family>Noto Sans</family>
-      <family>Noto Color Emoji</family>
-    </prefer>
-  </alias>
-  <alias>
-    <family>sans</family>
-    <prefer>
-      <family>Noto Sans</family>
-      <family>Noto Color Emoji</family>
-    </prefer>
-  </alias>
-  <alias>
-    <family>monospace</family>
-    <prefer>
-      <family>Noto Sans Mono</family>
-      <family>Noto Color Emoji</family>
-    </prefer>
-  </alias>
-  <alias>
-    <family>mono</family>
-    <prefer>
-      <family>Noto Sans Mono</family>
-      <family>Noto Color Emoji</family>
-    </prefer>
-  </alias>
-</fontconfig>
-```
-
-### Step 3: Disable Bitmap Fonts
-
-Bitmap fonts are used as fallbacks for some fonts. This can lead to some very blurry, pixelated, or abnormally large fonts. Some users have reported Microsoft fonts being affected by this, and therefore it's recommended for users to disable bitmap fonts on a per font basis or globally. Be careful with disabling it globally as it may break some fonts (additional testing is required). According to the Arch Wiki, users may use the `70-no-bitmaps-except-emoji.conf` preset to disable this behavior or use an XML file instead.
-
-**Path:** `~/.config/fontconfig/conf.d/20-no-embedded.conf`
-
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-<fontconfig>
-  <match target="font">
-    <edit name="embeddedbitmap" mode="assign">
-      <bool>false</bool>
-    </edit>
-  </match>
-</fontconfig>
-```
-
-> [!NOTE]
-> This excerpt was taken directly from the Arch Wiki so all credit goes to the Arch Wiki and all of its contributors.
-
-> [!TIP]
-> Newer `fontconfig` versions ship a ready-made preset for exactly this case, so you can skip writing XML by hand:
-> ```sh
-> sudo ln -s /usr/share/fontconfig/conf.avail/70-no-bitmaps-except-emoji.conf /etc/fonts/conf.d/
-> ```
-> Use the XML version below instead if you want finer control over which bitmap fonts (besides emoji) get kept.
-
-> [!TIP]
-> If emojis stop working after using the previous XML file, then feel free to use this one instead:
-
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-<fontconfig>
-  <match target="font">
-    <edit name="embeddedbitmap" mode="assign">
-      <bool>false</bool>
-    </edit>
-  </match>
-  <match target="font">
-    <test name="family" qual="any">
-      <string>Noto Color Emoji</string>
-    </test>
-    <edit name="embeddedbitmap" mode="assign">
-      <bool>true</bool>
-    </edit>
-  </match>
-</fontconfig>
-```
-
-### Step 4: Configure X11 Settings (Only for X11)
-
-> [!NOTE]
-> If you are using Wayland, you can skip this step as these settings are handled by Fontconfig or the compositor directly.
-
-Install `xorg-xrdb` (if needed).
+Metric-compatible Microsoft-style substitutions, if needed for documents or websites:
 
 ```sh
-sudo pacman -S xorg-xrdb
+sudo pacman -S ttf-liberation
 ```
 
-Edit the **~/.Xresources** file *OR* create one if not present.
+Monospaced fonts are personal preference rather than a rendering requirement. Install one you actually want instead of a bundle of several overlapping families. Examples include `ttf-jetbrains-mono`, `ttf-fira-code`, `ttf-hack`, and `adobe-source-code-pro-fonts`.
 
-> [!TIP]
-> Backup the file just in case.
+## Settings this guide deliberately does not force
+
+### Custom anti-aliasing and hinting XML
+
+Do not create a global `local.conf` or user `fonts.conf` merely to set:
+
+```text
+antialias=true
+hinting=true
+hintstyle=hintslight
+lcdfilter=lcddefault
+```
+
+Those are already Arch's defaults. Duplicating them adds maintenance without improving the baseline.
+
+### `10-hinting-slight.conf` and `11-lcdfilter-default.conf`
+
+Do not manually link these on current Arch. They are already part of the package's default Fontconfig configuration.
+
+### Forced RGB or BGR subpixel geometry
+
+Do not globally enable `10-sub-pixel-rgb.conf` or hard-code `rgba=rgb` unless you have verified the actual display layout and know the application stack needs it.
+
+Displays can use RGB, BGR, vertical layouts, rotated orientations, or non-standard OLED arrangements. Hard-coding the wrong geometry can create colored fringes or make text look worse. Leave display-specific subpixel choices to the desktop environment, administrator, or user.
+
+### `.Xresources` and `xorg-xrdb`
+
+Do not install `xorg-xrdb` or create `.Xresources` as a general font-rendering step. Fontconfig-aware applications already use Fontconfig.
+
+X resources remain useful only for specific X11 applications that do not honor Fontconfig correctly. If you actually use one of those applications, configure it as an application-specific workaround instead of making it a system-wide default.
+
+### FreeType interpreter version 40
+
+Do not set:
 
 ```sh
-vim ~/.Xresources
+FREETYPE_PROPERTIES="truetype:interpreter-version=40"
 ```
 
-> [!TIP]
-> Replace `vim` with your preferred text editor.
+Version 40 is already the normal FreeType/Arch default, so explicitly setting it is redundant unless you are undoing an older custom override.
 
-Add the following lines to that file and save changes.
+### Global stem darkening
 
-```sh
-Xft.lcdfilter: lcddefault
-Xft.hintstyle: hintslight
-Xft.hinting: 1
-Xft.antialias: 1
-Xft.rgba: rgb
-```
+This guide no longer recommends globally enabling stem darkening through `FREETYPE_PROPERTIES`.
 
-Run this command when finished.
+FreeType documents that stem darkening is designed for a gamma-correct rendering pipeline; without matching linear alpha blending and gamma correction, glyphs can become heavy and fuzzy. It is not a good universal Arch default.
 
-```sh
-xrdb -merge ~/.Xresources
-```
+### Font-family aliases
 
-### Step 5: Create Symbolic Links
+Do not force Noto or another family into every generic `serif`, `sans-serif`, or `monospace` alias just to improve rendering. Font-family preference is a separate choice from rasterization quality and is better left to Fontconfig's normal fallbacks, the desktop environment, or the user.
 
-Create required symbolic links for text rendering effects to work:
+## Troubleshooting
 
-> [!NOTE]
-> On current Arch installs, `10-hinting-slight.conf` and `11-lcdfilter-default.conf` are usually already enabled by default (fontconfig now pre-links some presets via `/usr/share/fontconfig/conf.default/`). If you see `File exists` for those two, that just means they're already active, so there's nothing to fix. `10-sub-pixel-rgb.conf` is typically the only one still missing. The `-f` flag below makes all three commands safe to run regardless.
+If fonts look fuzzy or distorted, check display scaling and DPI before adding rendering overrides. Incorrect scaling can make otherwise-correct font rendering look bad.
 
-```sh
-sudo ln -sf /usr/share/fontconfig/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d/
-sudo ln -sf /usr/share/fontconfig/conf.avail/10-hinting-slight.conf /etc/fonts/conf.d/
-sudo ln -sf /usr/share/fontconfig/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d/
-```
+If only one desktop environment or application looks wrong, check that application's or desktop environment's font settings first. GNOME, KDE Plasma, browsers, toolkits, and legacy X11 applications can override or bypass parts of the generic Fontconfig configuration.
 
-### Step 6: Edit freetype2.sh File
+If glyphs are missing, install a font family that covers the required script rather than changing anti-aliasing or hinting settings.
 
-> [!NOTE]
-> `truetype:interpreter-version=40` has been Arch's default since FreeType 2.7, so on a stock system this step currently has no visible effect. It's still worth doing explicitly if you (or a different guide) previously set a different interpreter version and want to reset it back to the default.
-
-Edit the `freetype2.sh` file.
-
-```sh
-sudo vim /etc/profile.d/freetype2.sh
-```
-
-Uncomment the following line from the file.
-
-```sh
-export FREETYPE_PROPERTIES="truetype:interpreter-version=40"
-```
-
-### Step 7: Refresh Font Cache
-
-Fontconfig-aware software normally refreshes the cache when needed, so this step is usually unnecessary. If you want to rebuild the cache manually, run:
+If you suspect stale font metadata after manually adding or removing font files outside the package manager, then a cache rebuild can be used as a troubleshooting step:
 
 ```sh
 fc-cache -fv
 ```
 
-### Step 8: Restart Applications
+It is not part of the normal rendering setup.
 
-Restart any applications that were already running so they load the new Fontconfig configuration. A full system reboot is normally unnecessary.
+## Summary
 
-### Optional Steps
+For a modern Arch Linux desktop, the recommended rendering setup is intentionally small:
 
-Add the following line to your "**/etc/environment**" file.
+1. Use Arch's existing Fontconfig defaults for anti-aliasing, hinting, `hintslight`, and `lcddefault`.
+2. Enable `70-no-bitmaps-except-emoji.conf` to prefer scalable fonts while preserving bitmap emoji.
+3. Install extra font families only when you need additional glyph coverage.
+4. Leave subpixel geometry and application-specific rendering choices to the display environment or user.
 
-```sh
-FREETYPE_PROPERTIES="cff:no-stem-darkening=0 autofitter:no-stem-darkening=0"
-```
-
-> [!NOTE]
-> This command enables **stem darkening**, which slightly thickens font "stems" to improve contrast and readability on low-DPI monitors. This results in a "richer" look similar to macOS font rendering.
-> - `cff:no-stem-darkening=0` enables it for OpenType/CFF fonts.
-> - `autofitter:no-stem-darkening=0` enables it for other fonts (like TrueType) when using the auto-hinter.
-> - Setting these to `0` (false) enables the feature because the property is named "**no**-stem-darkening".
+This avoids redundant configuration while preserving a crisp, maintainable, and hardware-agnostic baseline.
 
 ## Sources
 
-<https://wiki.archlinux.org/title/Font_configuration>
-
-<https://wiki.manjaro.org/index.php/Improve_Font_Rendering>
-
-<https://www.freetype.org/freetype2/docs/reference/ft2-properties.html#no-stem-darkening>
+- [ArchWiki: Font configuration](https://wiki.archlinux.org/title/Font_configuration)
+- [Arch Linux `fontconfig` package file list](https://archlinux.org/packages/extra/x86_64/fontconfig/files/)
+- [Arch manual: fonts-conf(5)](https://man.archlinux.org/man/extra/fontconfig/fonts-conf.5.en)
+- [FreeType driver properties](https://freetype.org/freetype2/docs/reference/ft2-properties.html)
 
 ## License
 
